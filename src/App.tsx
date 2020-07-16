@@ -10,10 +10,10 @@ import {
   IonTabs
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle } from 'ionicons/icons';
-import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+// import { ellipse, square, triangle } from 'ionicons/icons';
+// import Tab1 from './pages/Quick';
+// import Tab2 from './pages/FindRoute';
+// import Tab3 from './pages/Preference';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -33,34 +33,52 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import AppRoutes from './classes/AppRoute';
+import routes from './routes';
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route path="/tab1" component={Tab1} exact={true} />
-          <Route path="/tab2" component={Tab2} exact={true} />
-          <Route path="/tab3" component={Tab3} />
-          <Route path="/" render={() => <Redirect to="/tab1" />} exact={true} />
-        </IonRouterOutlet>
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon icon={triangle} />
-            <IonLabel>Tab 1</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon icon={ellipse} />
-            <IonLabel>Tab 2</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon icon={square} />
-            <IonLabel>Tab 3</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
-);
+interface Props {
+
+}
+
+interface States {
+
+}
+
+class App extends React.Component<Props, States> {
+  AppRoutes = new AppRoutes(routes);
+  constructor(props: Props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <IonApp>
+        <IonReactRouter>
+          <IonTabs>
+            <IonRouterOutlet>
+              {this.AppRoutes.route.map(({ path, component }) => (
+                <Route path={path} component={component} exact={true} key={path} />
+              ))}
+              <Redirect to={this.AppRoutes.route[0].path} />
+            </IonRouterOutlet>
+
+            <IonTabBar slot="bottom">
+              {this.AppRoutes.route.map(({ path, title, tab }) => (
+                tab
+                ?
+                <IonTabButton tab={title} href={path} key={path}>
+                  {/* <IonIcon icon={triangle} /> */}
+                  <IonLabel>{title}</IonLabel>
+                </IonTabButton>
+                :
+                null
+              ))}
+            </IonTabBar>
+          </IonTabs>
+        </IonReactRouter>
+      </IonApp>
+    )
+  }
+}
 
 export default App;
