@@ -473,6 +473,13 @@ export const setPolyline = (index: any, path: any[], style?: PolyLineStyle, call
         }
     });
 };
+
+export const setPath = (polyline: any, coords: number[][]) => {
+    const newPath = coords.map(item => latlng(item[0], item[1]));
+    polyline.setPath(newPath);
+    return polyline;
+};
+
 /**
  * 다음지도 위경도 객체
  * @param lat

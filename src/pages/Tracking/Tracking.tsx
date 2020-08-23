@@ -1,22 +1,27 @@
 import React from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButtons, IonButton, IonIcon } from '@ionic/react';
+import { Location } from "cordova-background-geolocation-lt";
 import Map from 'components/Atom/Map/Map';
 import './Tracking.css';
 import { useHistory } from 'react-router';
 import { BusStop } from '../../components/Molecules/BusStopItem/BusStopItem';
-import { close, bus, alarm } from 'ionicons/icons';
-import Geolo from '../../classes/Geolocation';
-import { GeolocationPosition, LocalNotifications } from '@capacitor/core';
+import { close } from 'ionicons/icons';
+import { LocalNotifications } from '@capacitor/core';
 import { Coord } from 'classes/Coordinate';
-import { setLevel, setCenter, drawCircle, setMap } from 'util/kakaomap';
+import { setLevel, setCenter, drawCircle, setMap, setPolylineOption } from 'util/kakaomap';
 import { getDistance } from '../../util/geo';
 import { App, Plugins } from '@capacitor/core';
+import Track from 'models/Tracking';
+import { setMapNull, setPolygon, setPolyline, setPath } from '../../util/kakaomap';
 
 const Tracking: React.FC = () => {
   const mapRef = React.useRef<Map>(null);
   const [busStop, setbusStop] = React.useState<BusStop>();
   const history = useHistory<{ busStop: BusStop }>();
-  const track = new Geolo()
+  const [tracker, settracker] = React.useState<Track | null>(null);
+  const trackPositions = React.useRef<number[][]>([]);
+  const polyline = React.useRef<any>(null);
+  const circles = React.useRef<any>(null);
 
   React.useEffect(() => {
     console.log(history.location.state?.busStop);
@@ -39,44 +44,25 @@ const Tracking: React.FC = () => {
       }
 
     }
+    return () => {
+      trackPositions.current = [];
+      polyline.current = null;
+
+      setMapNull(circles.current);
+      setMapNull(polyline.current);
+    }
   }, [])
-  const startBackgroundTask = () => {
-    App.addListener('appStateChange', (state) => {
 
-      if (!state.isActive) {
-        // The app has become inactive. We should check if we have some work left to do, and, if so,
-        // execute a background task that will allow us to finish that work before the OS
-        // suspends or terminates our app:
-
-        const taskId = Plugins.BackgroundTask.beforeExit(async () => {
-          // In this function We might finish an upload, let a network request
-          // finish, persist some data, or perform some other task
-
-          // Example of long task
-          let start = new Date().getTime();
-          for (let i = 0; i < 1e18; i++) {
-            if ((new Date().getTime() - start) > 20000) {
-              break;
-            }
-          }
-          // Must call in order to end our task otherwise
-          // we risk our app being terminated, and possibly
-          // being labeled as impacting battery life
-          Plugins.BackgroundTask.finish({
-            taskId
-          });
-        });
-      }
-    })
-  }
   const startTracking = () => {
-    track.getCurrentPosition();
-    track.watchPosition(callback);
-    // startBackgroundTask();
+    const tracking = new Track({
+      onLocation: drawSpot
+    });
+    settracker(tracking);
+    tracking.configureBackgroundGeolocation();
   }
 
   const stopTracking = () => {
-    track.clearWatch();
+    tracker?.stop();
   }
 
   const notification = async () => {
@@ -96,9 +82,18 @@ const Tracking: React.FC = () => {
     });
   }
 
-  const callback = (position: GeolocationPosition, err?: any) => {
-    const { latitude: lat, longitude: lng } = position.coords;
+  function drawSpot(location: Location) {
+    const { latitude: lat, longitude: lng } = location.coords;
     const circle = drawCircle(lat, lng, false, 2.5);
+    trackPositions.current.push([lat, lng]);
+    circles.current.push(circles);
+
+    if (polyline.current) {
+      setPath(polyline.current, trackPositions.current);
+    } else {
+      polyline.current = setPolyline(1, [[lat,lng]], {endArrow: true});
+    }
+
     setMap(circle, mapRef.current?.dmap);
 
     if (busStop) {
@@ -110,11 +105,6 @@ const Tracking: React.FC = () => {
         notification()
       }
     }
-
-    if (err) {
-      console.error(err);
-    }
-
   }
 
 
@@ -127,7 +117,7 @@ const Tracking: React.FC = () => {
             <IonButton onClick={() => startTracking()} >시작</IonButton>
             <IonButton onClick={() => stopTracking()} >중단</IonButton>
             <IonButton onClick={() => history.push('/quick')} >
-              <IonIcon icon={close}></IonIcon>
+              <IonIcon icon={close} />
             </IonButton>
           </IonButtons>
 

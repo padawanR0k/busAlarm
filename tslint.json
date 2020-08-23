@@ -4,7 +4,8 @@
     ],
     "rules": {
         "no-unused-expression": false,
-        "no-console": false
+        "no-console": false,
+        "no-restricted-globals": "event"
     },
     "files": [
     ],

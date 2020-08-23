@@ -20,7 +20,7 @@
     "jsx": "react",
     "rootDir": "src",
     "baseUrl": "./src",
-    "noUnusedLocals": false,
+    "noUnusedLocals": false
   },
   "include": [
     "src"

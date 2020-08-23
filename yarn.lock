@@ -3371,6 +3371,16 @@ copy-descriptor@^0.1.0:
   resolved "https://registry.yarnpkg.com/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
+cordova-background-geolocation-lt@^3.8.2:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/cordova-background-geolocation-lt/-/cordova-background-geolocation-lt-3.8.2.tgz#ff289561345801f375fc141f67605798f6cc4303"
+  integrity sha512-BXiiwd6fJfJO+ALkT2nKI3O6cOtfahxP/Xflzt5MpGH3ePLTMh/gciSjbFtL+3LY71cNOY0vs+zhWoctZIAb7A==
+
+cordova-plugin-background-fetch@^6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-background-fetch/-/cordova-plugin-background-fetch-6.1.1.tgz#74d36c43d7bc74b9d4cdbeae2512158a2f357322"
+  integrity sha512-4rQu3aXiNuSLgghVtUfjpokNVYfyXeYoBB8A9skqz0gb0jkv0zHc8EiJeCTsl3xJFfWGLdc5ZSickSK1SZtloQ==
+
 core-js-compat@^3.6.2:
   version "3.6.5"
   resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.6.5.tgz#2a51d9a4e25dfd6e690251aa81f99e3c05481f1c"
